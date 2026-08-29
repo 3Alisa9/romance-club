@@ -21,7 +21,9 @@ for filename in os.listdir(image_folder):
         inputs = processor(images=image, return_tensors="pt")
         with torch.no_grad():
             outputs = model.get_image_features(**inputs.to(device))
-        emb = outputs.detach().cpu().numpy().astype(np.float32)
+if hasattr(outputs, 'pooler_output'):
+        outputs = model.get_image_features(**inputs.to(device))
+if hasattr(outputs, 'pooler_output'):
         embeddings.append(emb)
         name = os.path.splitext(filename)[0]
         names.append(name)

@@ -35,7 +35,7 @@ def search():
     inputs = processor(images=img, return_tensors="pt")
     with torch.no_grad():
         outputs = model.get_image_features(**inputs.to(device))
-    query_emb = outputs.detach().cpu().numpy().astype(np.float32)
+    query_emb = outputs.pooler_output.detach().cpu().numpy().astype(np.float32)
     distances, indices = index.search(query_emb, 1)
     best_idx = indices[0][0]
     name = names[best_idx]
