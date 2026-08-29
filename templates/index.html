@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Поиск персонажа по обрезку</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial; text-align: center; padding: 50px; background: #f0f2f5; }
+        .drop-zone { border: 3px dashed #aaa; padding: 50px; background: white; cursor: pointer; }
+        .drop-zone.dragover { border-color: #007bff; background: #e3f2fd; }
+        #result { margin-top: 30px; font-size: 28px; font-weight: bold; color: #333; }
+        img#preview { max-width: 200px; margin-top: 20px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Загрузите обрезанный фрагмент</h1>
+    <div class="drop-zone" id="dropZone">
+        <p>Нажмите или перетащите файл сюда</p>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+    </div>
+    <img id="preview" style="display:none;">
+    <div id="result"></div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const resultDiv = document.getElementById('result');
+        const preview = document.getElementById('preview');
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => sendFile(e.target.files[0]);
+
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+        dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); sendFile(e.dataTransfer.files[0]); };
+
+        function sendFile(file) {
+            if (!file) return;
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Ищем...';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/search', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    resultDiv.innerHTML = '✅ Найденный персонаж: ' + data.name;
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '❌ Ошибка: ' + err;
+                });
+        }
+    </script>
+</body>
+</html>

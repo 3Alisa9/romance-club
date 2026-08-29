@@ -1,0 +1,7 @@
+torch
+transformers
+pillow
+faiss-cpu
+numpy
+flask
+flask-cors

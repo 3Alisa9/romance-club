@@ -1,0 +1,6 @@
+images/
+image_index.faiss
+names.txt
+*.pyc
+__pycache__
+temp/
